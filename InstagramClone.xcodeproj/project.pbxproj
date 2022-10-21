@@ -56,6 +56,12 @@
 		B457903A2902DECB00C2C080 /* InstagramClone */ = {
 			isa = PBXGroup;
 			children = (
+				B45790562902DF4400C2C080 /* Model */,
+				B45790552902DF4300C2C080 /* View */,
+				B45790542902DF4100C2C080 /* ViewModel */,
+				B45790532902DF4000C2C080 /* Controller */,
+				B45790502902DF3800C2C080 /* API */,
+				B457904F2902DEF300C2C080 /* Utils */,
 				B457903B2902DECB00C2C080 /* AppDelegate.swift */,
 				B457903D2902DECB00C2C080 /* SceneDelegate.swift */,
 				B457903F2902DECB00C2C080 /* ViewController.swift */,
@@ -65,6 +71,48 @@
 				B45790492902DECC00C2C080 /* Info.plist */,
 			);
 			path = InstagramClone;
+			sourceTree = "<group>";
+		};
+		B457904F2902DEF300C2C080 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		B45790502902DF3800C2C080 /* API */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		B45790532902DF4000C2C080 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		B45790542902DF4100C2C080 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		B45790552902DF4300C2C080 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		B45790562902DF4400C2C080 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
