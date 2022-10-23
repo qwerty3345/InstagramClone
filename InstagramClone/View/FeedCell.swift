@@ -123,10 +123,10 @@ final class FeedCell: UICollectionViewCell {
         
         addSubview(postTimeLabel)
         postTimeLabel.anchor(top: captionLabel.bottomAnchor, left: leftAnchor,
-                            paddingTop: 8, paddingLeft: 8)
+                             paddingTop: 8, paddingLeft: 8)
         
         
-         
+        
     }
     
     required init?(coder: NSCoder) {

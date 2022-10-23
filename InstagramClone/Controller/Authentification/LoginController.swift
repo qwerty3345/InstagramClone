@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 final class LoginController: UIViewController {
     
@@ -39,6 +40,7 @@ final class LoginController: UIViewController {
         button.layer.cornerRadius = 5
         button.setHeight(50)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
         return button
     }()
     
@@ -67,6 +69,7 @@ final class LoginController: UIViewController {
     
     // MARK: - Actions
     
+    /// 회원가입 버튼 액션
     @objc func handleShowSignUp() {
         let vc = RegistrationController()
         navigationController?.pushViewController(vc, animated: true)
@@ -80,8 +83,22 @@ final class LoginController: UIViewController {
             print("password changed")
             viewModel.password = sender.text
         }
-
+        
         updateForm()
+    }
+    
+    /// 로그인 버튼 액션
+    @objc func handleLogin() {
+        guard let email = emailTextField.text, let password = passwordTextField.text else { return }
+        
+        AuthService.loginUser(withEmail: email, password: password) { error in
+            if let error = error {
+                print("##### Firebase 로그인 에러: \(error.localizedDescription)")
+                return
+            }
+            
+            self.dismiss(animated: true)
+        }
     }
     
     

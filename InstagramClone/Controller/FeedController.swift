@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 private let reuseIndentifier = "Cell"
 
@@ -19,6 +20,22 @@ final class FeedController: UICollectionViewController {
         configureUI()
     }
     
+    
+    // MARK: - Actions
+    
+    @objc func handleLogout() {
+        do {
+            try Auth.auth().signOut()
+            let vc = LoginController()
+            let nav = UINavigationController(rootViewController: vc)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true, completion: nil)
+        } catch {
+            print("##### Firebase Auth 로그아웃 실패: \(error.localizedDescription)")
+        }
+    }
+    
+    
     // MARK: - Helpers
     
     func configureUI() {
@@ -26,8 +43,12 @@ final class FeedController: UICollectionViewController {
         
         // Cell에 대한 클래스와 셀의 재사용을 위한 id값을 등록해줘야 함.
         collectionView.register(FeedCell.self, forCellWithReuseIdentifier: reuseIndentifier)
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "로그아웃", style: .plain, target: self,
+                                                            action: #selector(handleLogout))
     }
 }
+
 
 // MARK: - UICollectionViewDataSource
 

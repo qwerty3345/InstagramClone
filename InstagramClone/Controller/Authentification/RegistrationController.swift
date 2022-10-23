@@ -12,11 +12,13 @@ final class RegistrationController: UIViewController {
     // MARK: - Properties
     
     private var viewModel = RegistrationViewModel()
+    private var profileImage: UIImage?
     
     private let plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "plus_photo") , for: .normal)
         button.tintColor = .white
+        button.addTarget(self, action: #selector(handleProfilePhotoSelect), for: .touchUpInside)
         return button
     }()
     
@@ -50,6 +52,8 @@ final class RegistrationController: UIViewController {
         button.layer.cornerRadius = 5
         button.setHeight(50)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.isEnabled = false
+        button.addTarget(self, action: #selector(handleSignUp), for: .touchUpInside)
         return button
     }()
     
@@ -71,10 +75,34 @@ final class RegistrationController: UIViewController {
     
     // MARK: - Actions
     
+    /// 회원가입 버튼 액션
+    @objc func handleSignUp() {
+        guard let email = emailTextField.text,
+              let password = passwordTextField.text,
+              let fullname = fullNameTextField.text,
+              let username = userNameTextField.text,
+              let profileImage = profileImage else { return }
+        
+        
+        let credentials = AuthCredentials(email: email, password: password, fullname: fullname, username: username, profileImage: profileImage)
+        
+        AuthService.registerUser(withCredential: credentials) { error in
+            if let error = error {
+                print("##### registerUser error: \(error.localizedDescription)")
+                return
+            }
+            
+            print("##### 성공적으로 Firestore에 유저 정보 저장")
+            self.dismiss(animated: true)
+        }
+    }
+    
+    /// 로그인 화면으로 이동 버튼 액션
     @objc func handleShowLogin() {
         navigationController?.popViewController(animated: true)
     }
     
+    /// 텍스트 입력 시 액션  (한 글자당 호출)
     @objc func textDidChange(sender: UITextField) {
         switch sender {
         case emailTextField:
@@ -89,8 +117,15 @@ final class RegistrationController: UIViewController {
             break
         }
         
+        // protocol 에서 구현 한 메서드 (FormViewModel)
         updateForm()
-        
+    }
+    
+    @objc func handleProfilePhotoSelect() {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.allowsEditing = true
+        present(picker, animated: true)
     }
     
     // MARK: - Helpers
@@ -130,5 +165,30 @@ extension RegistrationController: FormViewModel {
         signUpButton.backgroundColor = viewModel.buttonBackgroundColor
         signUpButton.setTitleColor(viewModel.buttonTitleColor, for: .normal)
         signUpButton.isEnabled = viewModel.formIsValid
+    }
+}
+
+// MARK: - ImagePicker를 위한 delegate
+
+extension RegistrationController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    // didFinish -> 이미지 선택 완료 시 호출
+    func imagePickerController(_ picker: UIImagePickerController,
+                               didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        // 선택 한 이미지 옵셔널 바인딩
+        guard let selectedImage = info[.editedImage] as? UIImage else { return }
+        
+        // 선택 한 이미지를 profileImage 멤버 프로퍼티에 할당
+        profileImage = selectedImage
+        
+        plusPhotoButton.layer.cornerRadius = plusPhotoButton.frame.width / 2
+        plusPhotoButton.layer.masksToBounds = true
+        plusPhotoButton.layer.borderColor = UIColor.white.cgColor
+        plusPhotoButton.layer.borderWidth = 2
+        plusPhotoButton.setImage(selectedImage.withRenderingMode(.alwaysOriginal), for: .normal)
+        
+        
+        
+        self.dismiss(animated: true)
     }
 }
