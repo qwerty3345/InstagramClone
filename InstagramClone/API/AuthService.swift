@@ -54,7 +54,7 @@ struct AuthService {
                                            "username": credentials.username]
                 
                 // Firestore에 사용자 정보 DB 저장 ("users_컬렉션 / uid_다큐멘트 / 데이터" 형태)
-                Firestore.firestore().collection("users").document(uid).setData(data, completion: completion)
+                COLLECTION_USERS.document(uid).setData(data, completion: completion)
             }
         }
     }

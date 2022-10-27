@@ -8,11 +8,16 @@
 import UIKit
 import FirebaseAuth
 
+protocol AuthenticationDelegate: class {
+    func authenticationDidComplete()
+}
+
 final class LoginController: UIViewController {
     
     // MARK: - Properties
     
     private var viewModel = LoginViewModel()
+    weak var delegate: AuthenticationDelegate?
     
     private let iconImage: UIImageView = {
         let iv = UIImageView(image: #imageLiteral(resourceName: "Instagram_logo_white"))
@@ -72,15 +77,15 @@ final class LoginController: UIViewController {
     /// 회원가입 버튼 액션
     @objc func handleShowSignUp() {
         let vc = RegistrationController()
+        // ⭐️⭐️⭐️ RegisterController의 delegate 지정 시 이미 LoginController에 지정한 delegate 필드가 MainTabController로 지정되어 있기에 동일할당.
+        vc.delegate = delegate
         navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc func textDidChange(sender: UITextField) {
         if sender == emailTextField {
-            print("email changed")
             viewModel.email = sender.text
         } else {
-            print("password changed")
             viewModel.password = sender.text
         }
         
@@ -96,8 +101,9 @@ final class LoginController: UIViewController {
                 print("##### Firebase 로그인 에러: \(error.localizedDescription)")
                 return
             }
-            
-            self.dismiss(animated: true)
+            print("###delegate before")
+            self.delegate?.authenticationDidComplete()
+            print("###delegate after")
         }
     }
     

@@ -11,6 +11,7 @@ final class RegistrationController: UIViewController {
     
     // MARK: - Properties
     
+    weak var delegate: AuthenticationDelegate?
     private var viewModel = RegistrationViewModel()
     private var profileImage: UIImage?
     
@@ -93,7 +94,7 @@ final class RegistrationController: UIViewController {
             }
             
             print("##### 성공적으로 Firestore에 유저 정보 저장")
-            self.dismiss(animated: true)
+            self.delegate?.authenticationDidComplete()
         }
     }
     

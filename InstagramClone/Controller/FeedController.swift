@@ -23,10 +23,13 @@ final class FeedController: UICollectionViewController {
     
     // MARK: - Actions
     
+    /// 로그아웃 버튼
     @objc func handleLogout() {
         do {
             try Auth.auth().signOut()
             let vc = LoginController()
+            // ⭐️ delegate 지정 시 Delegate를 구현해놓은 MainTabController로 형변환 후 지정 해 줌.
+            vc.delegate = self.tabBarController as? MainTabController
             let nav = UINavigationController(rootViewController: vc)
             nav.modalPresentationStyle = .fullScreen
             self.present(nav, animated: true, completion: nil)
@@ -44,6 +47,7 @@ final class FeedController: UICollectionViewController {
         // Cell에 대한 클래스와 셀의 재사용을 위한 id값을 등록해줘야 함.
         collectionView.register(FeedCell.self, forCellWithReuseIdentifier: reuseIndentifier)
         
+        // 우측 상단 네비게이션 바 아이템 버튼 추가
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "로그아웃", style: .plain, target: self,
                                                             action: #selector(handleLogout))
     }

@@ -7,7 +7,7 @@
 
 import UIKit
 
-/// FeedController의 CollectionView에 들어 갈 Cell의 UI Class
+/// 화면 메인 피드 FeedController의 CollectionView에 들어 갈 Cell의 UI Class
 final class FeedCell: UICollectionViewCell {
     
     // MARK: - Properties
