@@ -12,14 +12,18 @@ final class FeedCell: UICollectionViewCell {
     
     // MARK: - Properties
     
+    var viewModel: PostViewModel? {
+        didSet {
+            configure()
+        }
+    }
+    
     private let profileImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         iv.isUserInteractionEnabled = true
-        iv.backgroundColor = .systemPurple
-        iv.image = #imageLiteral(resourceName: "venom-7")
-        
+        iv.backgroundColor = .lightGray
         return iv
     }()
     
@@ -38,8 +42,7 @@ final class FeedCell: UICollectionViewCell {
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         iv.isUserInteractionEnabled = true
-        iv.backgroundColor = .systemPurple
-        iv.image = #imageLiteral(resourceName: "venom-7")
+        iv.backgroundColor = .lightGray
         
         return iv
     }()
@@ -140,6 +143,19 @@ final class FeedCell: UICollectionViewCell {
     }
     
     // MARK: - Helpers
+    
+    func configure() {
+        guard let viewModel = viewModel else { return }
+        
+        userNameButton.setTitle(viewModel.username, for: .normal)
+        
+        likesLabel.text = viewModel.likesLabelText
+        captionLabel.text = viewModel.caption
+        
+        postImageView.sd_setImage(with: viewModel.postImageUrl)
+        profileImageView.sd_setImage(with: viewModel.profileImageUrl)
+        
+    }
     
     func congifureActionButtons() {
         let stackView = UIStackView(arrangedSubviews: [likeButton, commentButton, shareButton])

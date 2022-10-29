@@ -19,7 +19,18 @@ struct UserService {
         COLLECTION_USERS.document(uid).getDocument { snapshot, error in
             guard let dict = snapshot?.data() else { return }
             
-            print("##### Snapshot data is \(dict)")
+            // 불러온 snapshot 데이터로 user 객체 생성
+            let user = User(dictionary: dict)
+            
+            // 콜백 함수 실행
+            completion(user)
+        }
+    }
+    
+    // Firebase에서 uid를 바탕으로 유저 불러오기
+    static func fetchUser(uid: String, completion: @escaping (User) -> Void) {
+        COLLECTION_USERS.document(uid).getDocument { snapshot, error in
+            guard let dict = snapshot?.data() else { return }
             
             // 불러온 snapshot 데이터로 user 객체 생성
             let user = User(dictionary: dict)
@@ -73,17 +84,7 @@ struct UserService {
                 let userStats = UserStats(followers: followes, following: following)
                 completion(userStats)
             }
-            
         }
     }
-    
-    static func getFollowersNumber(uid: String, completion: @escaping(Int) -> Void) {
-        
-    }
-    
-    static func getFollowingNumber(uid: String, completion: @escaping(Int) -> Void) {
-        
-    }
-    
     
 }

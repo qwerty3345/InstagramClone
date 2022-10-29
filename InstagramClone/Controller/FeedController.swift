@@ -14,14 +14,25 @@ final class FeedController: UICollectionViewController {
     
     // MARK: - Lifecycle
     
+    private var posts = [Post]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureUI()
+        fetchPosts()
     }
     
     
     // MARK: - Actions
+    
+    /// 리프레시 컨트롤에 대한 새로고침 액션
+    @objc func handleRefresh() {
+        print("###1 posts: \(posts.count)")
+        posts.removeAll()
+        print("###2 posts: \(posts.count)")
+        fetchPosts()
+    }
     
     /// 로그아웃 버튼
     @objc func handleLogout() {
@@ -39,6 +50,22 @@ final class FeedController: UICollectionViewController {
     }
     
     
+    // MARK: - API
+    
+    func fetchPosts() {
+        print("###2.5 posts: \(posts.count)")
+        PostService.fetchPosts { posts in
+            print("###3 posts: \(posts.count)")
+            self.posts = posts
+            self.collectionView.refreshControl?.endRefreshing()
+            
+            self.collectionView.reloadData()
+            
+            
+        }
+    }
+    
+    
     // MARK: - Helpers
     
     func configureUI() {
@@ -50,6 +77,13 @@ final class FeedController: UICollectionViewController {
         // 우측 상단 네비게이션 바 아이템 버튼 추가
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "로그아웃", style: .plain, target: self,
                                                             action: #selector(handleLogout))
+        
+        navigationItem.title = "피드"
+        
+        // 리프레셔 (스크롤 아래로 당기면 새로고침) 추가
+        let refresher = UIRefreshControl()
+        refresher.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+        collectionView.refreshControl = refresher
     }
 }
 
@@ -59,13 +93,19 @@ final class FeedController: UICollectionViewController {
 extension FeedController {
     // "numberOfItemsInSection": CollectionView에 생성 할 Cell의 수
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 5
+        print("### numberOfItemsInSection: \(posts.count)")
+        return posts.count
     }
     
     // "cellForItemAt": CollectionView에 각 셀을 만드는 규칙
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        // FeedCell로 typeCasting 해줌으로서 활용
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIndentifier, for: indexPath) as! FeedCell
+        
+        // indexOutOfRange 에러 때문에 추가함. TODO: 정확한 이유에 대해서 더 알아보기.
+        if posts.count > indexPath.row {
+            cell.viewModel = PostViewModel(post: posts[indexPath.row])
+        }
+        
         return cell
     }
 }

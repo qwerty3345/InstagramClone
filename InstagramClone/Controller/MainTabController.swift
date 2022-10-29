@@ -11,14 +11,14 @@
  
  LoginController 내부에 delegate: AuthDelegate 가 있고,
  로그인이 완료되면 delegate.authComplete() 를 실행함.
-
+ 
  MainTabController 에서 해당 AuthDelegate를 구현하고 있고, 대신 그 동작을 수행함. (loginVC.delegate = self)
  구현한 authComplete() 에서 fetchUser() 를 실행하며 user 객체를 받아오고 dismiss 를 통해 VC 를 종료함. (이전 LoginController 를 종료)
-
+ 
  fetchUser 에서 받아온 User 객체를 멤버변수에 할당하고, 멤버변수 user의 didSet에서 configureViewControllers(withUser: user)를 실행.
-
+ 
  해당 configureVC에서 ProfileController 를 생성할 때, 애초에 user 객체를 생성자로 받아서 생성함.
-
+ 
  그리고 user 객체를 의존성 주입으로 (생성자로) 받아온 ProfileController에서
  헤더에 ProfileHeaderViewModel(user: user)을 생성하고 넣어줌.
  */
@@ -26,6 +26,8 @@
 
 import UIKit
 import FirebaseAuth
+import YPImagePicker
+
 
 final class MainTabController: UITabBarController {
     
@@ -38,6 +40,8 @@ final class MainTabController: UITabBarController {
             configureViewControllers(withUser: user)
         }
     }
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -92,6 +96,7 @@ final class MainTabController: UITabBarController {
     func configureViewControllers(withUser user: User) {
         view.backgroundColor = .white
         tabBar.backgroundColor = UIColor(white: 1.0, alpha: 0.5)
+        self.delegate = self
         
         let layout = UICollectionViewFlowLayout()   // 🎾 FlowLayout으로 해야 함. 많이들 하는 실수.
         // UINavigationController 형식.
@@ -107,7 +112,7 @@ final class MainTabController: UITabBarController {
         let notifications = templateNavigationController(unselectedImage: #imageLiteral(resourceName: "like_unselected"), selectedImage: #imageLiteral(resourceName: "like_selected"),
                                                          rootViewController: NotificationController())
         
-//        let profileLayout = UICollectionViewFlowLayout()
+        //        let profileLayout = UICollectionViewFlowLayout()
         // DI(의존성주입)으로 User 객체를 애초에 받아서 ProfileController 를 생성함.
         let profileController = ProfileController(user: user)
         let profile = templateNavigationController(unselectedImage: #imageLiteral(resourceName: "profile_unselected"), selectedImage: #imageLiteral(resourceName: "profile_selected"),
@@ -127,7 +132,29 @@ final class MainTabController: UITabBarController {
         return nav
     }
     
+    // YPImagePicker 이미지 선택 완료 시 동작 설정
+    func didFinishPickingMedia(_ picker: YPImagePicker) {
+        picker.didFinishPicking { items, _ in
+            picker.dismiss(animated: false) {
+                guard let selectedImage = items.singlePhoto?.image else { return }
+                
+                let vc = UploadPostController()
+                vc.selectedImage = selectedImage
+                vc.delegate = self
+                vc.currentUser = self.user
+                
+                let nav = UINavigationController(rootViewController: vc)
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: false)
+                
+                print("#### didFinishPicking \(selectedImage)")
+            }
+        }
+    }
+    
 }
+
+// MARK: - AuthenticationDelegate
 
 extension MainTabController: AuthenticationDelegate {
     // 유저 인증 (로그인 or 회원가입)이 완료되면,
@@ -138,6 +165,50 @@ extension MainTabController: AuthenticationDelegate {
         // 로그인 / 회원가입 화면을 종료함.
         self.dismiss(animated: true)
     }
-    
-    
+}
+
+// MARK: - UITabBarControllerDelegate
+extension MainTabController: UITabBarControllerDelegate {
+    // "shouldSelect" : tabBar에서 특정 vc 선택 시의 동작 지정
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        let index = viewControllers?.firstIndex(of: viewController)
+        
+        // ImageSelectorController 선택 시 YPImagePicker 생성 해서 띄워줌.
+        if index == 2 {
+            var config = YPImagePickerConfiguration()
+            config.library.mediaType = .photo
+            config.shouldSaveNewPicturesToAlbum = false
+            config.startOnScreen = .library
+            config.screens = [.library]
+            config.hidesStatusBar = false
+            config.hidesBottomBar = false
+            config.library.maxNumberOfItems = 1
+            
+            let picker = YPImagePicker(configuration: config)
+            picker.modalPresentationStyle = .fullScreen
+            present(picker, animated: true)
+            
+            didFinishPickingMedia(picker)
+        }
+        
+        return true
+    }
+}
+
+
+// MARK: - UploadPostControllerDelegate
+
+extension MainTabController: UploadPostControllerDelegate {
+    func controllerDidFinishUploadingPost(_ controller: UploadPostController) {
+        selectedIndex = 0
+        controller.dismiss(animated: true)
+        
+        // ⭐️⭐️⭐️ FeedController 를 가져오는 법!!
+        // 애초에 feedVC를 네비게이션 컨트롤러를 통해 생성하고, tabBarController의 viewControllers에 넣어줬기 때문에,
+        // 1. viewControllers의 첫 번째 요소를 가져온 뒤, 네비게이션 컨트롤러로 형변환을 하고
+        // 2. 해당 네비게이션 컨트롤러의 첫 번째 요소를 가져와서 FeedController로 형변환을 하면 됨.
+        guard let feedNav = viewControllers?.first as? UINavigationController else { return }
+        guard let feedVC = feedNav.viewControllers.first as? FeedController else { return }
+        feedVC.handleRefresh()
+    }
 }
