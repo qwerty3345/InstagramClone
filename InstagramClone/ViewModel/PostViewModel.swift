@@ -28,6 +28,8 @@ struct PostViewModel {
     var username: String { return post.ownerUsername }
     
     var profileImageUrl: URL? { return URL(string: post.ownerImageUrl) }
+    
+    var ownerUid: String { return post.ownerUid }
 
     init(post: Post) {
         self.post = post

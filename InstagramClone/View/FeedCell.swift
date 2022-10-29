@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol FeedCellDelegate: AnyObject {
+    func didTapUserName(userToShow user: User)
+}
+
 /// 화면 메인 피드 FeedController의 CollectionView에 들어 갈 Cell의 UI Class
 final class FeedCell: UICollectionViewCell {
     
@@ -17,6 +21,8 @@ final class FeedCell: UICollectionViewCell {
             configure()
         }
     }
+    
+    weak var delegate: FeedCellDelegate?
     
     private let profileImageView: UIImageView = {
         let iv = UIImageView()
@@ -140,6 +146,12 @@ final class FeedCell: UICollectionViewCell {
     
     @objc func didTapUserName() {
         print("유저이름 버튼 클릭")
+        guard let viewModel = viewModel else { return }
+        
+        UserService.fetchUser(uid: viewModel.ownerUid) { user in
+            self.delegate?.didTapUserName(userToShow: user)
+        }
+        
     }
     
     // MARK: - Helpers

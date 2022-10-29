@@ -15,13 +15,7 @@ final class ProfileController: UICollectionViewController {
     // MARK: - Properties
     
     private var user: User
-//    {
-//        // (속성 감시자) user 데이터 할당 시,
-//        didSet {
-//            // ⭐️⭐️⭐️컬렉션뷰 데이터 리로드 해줌. (viewModel의 user 할당 구문이 실행될 것. _ datasource 메서드)
-//            collectionView.reloadData()
-//        }
-//    }
+    private var posts = [Post]()
     
     
     
@@ -43,6 +37,7 @@ final class ProfileController: UICollectionViewController {
         configureCollectionView()
         checkIfUserIsFollowed()
         fetchUserStats()
+        fetchPosts()
     }
     
     // MARK: - API
@@ -60,6 +55,14 @@ final class ProfileController: UICollectionViewController {
             self.collectionView.reloadData()
         }
     }
+    
+    func fetchPosts() {
+        PostService.fetchPosts(forUser: user.uid) { posts in
+            self.posts = posts
+            self.collectionView.reloadData()
+            print("ProfileController - fetch Posts")
+        }
+    }
 
     // MARK: - Actions
     
@@ -73,6 +76,7 @@ final class ProfileController: UICollectionViewController {
                                 forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
                                 withReuseIdentifier: headerIdentifier)
     }
+
 }
 
 // MARK: - UICollectionViewDataSource
@@ -80,12 +84,13 @@ final class ProfileController: UICollectionViewController {
 extension ProfileController {
     // 컬렉션뷰 셀 갯수
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 20
+        return posts.count
     }
     
     // 컬렉션뷰 셀 지정
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIndentifier, for: indexPath) as! ProfileCell
+        cell.viewModel = PostViewModel(post: posts[indexPath.row])
         return cell
     }
     
@@ -106,7 +111,14 @@ extension ProfileController {
 // MARK: - UICollectionViewDelegate
 
 extension ProfileController {
-    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("#### selected Post: \(posts[indexPath.row].caption)")
+        // ⭐️⭐️⭐️ FlowLayout 으로 해야만 작동함!!!
+        let vc = FeedController(collectionViewLayout: UICollectionViewFlowLayout())
+//        let vc = FeedController()
+        vc.post = posts[indexPath.row]
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }
 
 

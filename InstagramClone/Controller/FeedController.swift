@@ -14,7 +14,10 @@ final class FeedController: UICollectionViewController {
     
     // MARK: - Lifecycle
     
-    private var posts = [Post]()
+    var posts = [Post]()
+    
+    // 프로필에서 게시물 클릭해서 들어갔을 때, 하나의 포스트만 보여주기 위한 필드
+    var post: Post?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,10 +31,9 @@ final class FeedController: UICollectionViewController {
     
     /// 리프레시 컨트롤에 대한 새로고침 액션
     @objc func handleRefresh() {
-        print("###1 posts: \(posts.count)")
         posts.removeAll()
-        print("###2 posts: \(posts.count)")
         fetchPosts()
+        
     }
     
     /// 로그아웃 버튼
@@ -53,9 +55,10 @@ final class FeedController: UICollectionViewController {
     // MARK: - API
     
     func fetchPosts() {
-        print("###2.5 posts: \(posts.count)")
+        // post 가 nil일 때만 받아옴. (프로필에서 넘어온 경우가 아닌, 피드에서 보일때만 fetch)
+        guard post == nil else { return }
+        
         PostService.fetchPosts { posts in
-            print("###3 posts: \(posts.count)")
             self.posts = posts
             self.collectionView.refreshControl?.endRefreshing()
             
@@ -74,16 +77,17 @@ final class FeedController: UICollectionViewController {
         // Cell에 대한 클래스와 셀의 재사용을 위한 id값을 등록해줘야 함.
         collectionView.register(FeedCell.self, forCellWithReuseIdentifier: reuseIndentifier)
         
-        // 우측 상단 네비게이션 바 아이템 버튼 추가
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "로그아웃", style: .plain, target: self,
-                                                            action: #selector(handleLogout))
-        
-        navigationItem.title = "피드"
-        
-        // 리프레셔 (스크롤 아래로 당기면 새로고침) 추가
-        let refresher = UIRefreshControl()
-        refresher.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
-        collectionView.refreshControl = refresher
+        if post == nil {
+            // 우측 상단 네비게이션 바 아이템 버튼 추가
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "로그아웃", style: .plain, target: self,
+                                                                action: #selector(handleLogout))
+            navigationItem.title = "피드"
+            
+            // 리프레셔 (스크롤 아래로 당기면 새로고침) 추가
+            let refresher = UIRefreshControl()
+            refresher.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
+            collectionView.refreshControl = refresher
+        }
     }
 }
 
@@ -93,17 +97,24 @@ final class FeedController: UICollectionViewController {
 extension FeedController {
     // "numberOfItemsInSection": CollectionView에 생성 할 Cell의 수
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("### numberOfItemsInSection: \(posts.count)")
-        return posts.count
+        return post == nil ? posts.count : 1
     }
     
     // "cellForItemAt": CollectionView에 각 셀을 만드는 규칙
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIndentifier, for: indexPath) as! FeedCell
         
-        // indexOutOfRange 에러 때문에 추가함. TODO: 정확한 이유에 대해서 더 알아보기.
-        if posts.count > indexPath.row {
-            cell.viewModel = PostViewModel(post: posts[indexPath.row])
+        if let post = post {
+            // post 가 존재할 때 (프로필에서 넘어와서 1개만 표시할 경우에)
+            cell.viewModel = PostViewModel(post: post)
+        } else {
+            // 여러 post들이 존재할 때 (피드)
+            cell.delegate = self
+            
+            // indexOutOfRange 에러 때문에 추가함. TODO: 정확한 이유에 대해서 더 알아보기.
+            if posts.count > indexPath.row {
+                cell.viewModel = PostViewModel(post: posts[indexPath.row])
+            }
         }
         
         return cell
@@ -120,5 +131,12 @@ extension FeedController: UICollectionViewDelegateFlowLayout {
         height += 50                        // 버튼 3개 담은 스택뷰 높이
         height += 60                        // 좋아요수, 댓글 높이
         return CGSize(width: width, height: height) // 가로는 뷰 꽉차고, 세로는 200으로.
+    }
+}
+
+extension FeedController: FeedCellDelegate {
+    func didTapUserName(userToShow user: User) {
+        let vc = ProfileController(user: user)
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

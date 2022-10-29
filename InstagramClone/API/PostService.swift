@@ -27,17 +27,31 @@ struct PostService {
     }
     
     static func fetchPosts(completion: @escaping ([Post]) -> Void) {
-        print("### fetch post1")
         
         COLLECTION_POSTS.order(by: "timestamp", descending: true).getDocuments { snapshot, error in
-            print("### fetch post2")
             guard let documents = snapshot?.documents else { return }
             
-            
-            
             let posts = documents.map{ Post(postId: $0.documentID, dictionary: $0.data()) }
-            print("### fetch post3")
+            
             completion(posts)
         }
     }
+    
+    static func fetchPosts(forUser uid: String, completion: @escaping ([Post]) -> Void) {
+        let query = COLLECTION_POSTS
+            .whereField("ownerUid", isEqualTo: uid)
+            .order(by: "timestamp", descending: true)
+        // TODO: 시간 순으로 정렬하기
+        
+        
+        query.getDocuments { snapshot, error in
+            guard let documents = snapshot?.documents else { return }
+            
+            let posts = documents.map{ Post(postId: $0.documentID, dictionary: $0.data()) }
+            print("### fetch posts: \(posts.count)")
+            completion(posts)
+        }
+        
+    }
 }
+
