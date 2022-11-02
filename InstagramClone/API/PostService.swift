@@ -41,7 +41,7 @@ struct PostService {
         let query = COLLECTION_POSTS
             .whereField("ownerUid", isEqualTo: uid)
             .order(by: "timestamp", descending: true)
-        // TODO: 시간 순으로 정렬하기
+            // where 필드와 order 필드를 함께 사용하기 위해, FirebaseFireStore에서 색인을 추가 해 줬음. (안해줬을 때 DEBUG에 뜨는 LOG의 링크 따라가면 설정 가능)
         
         
         query.getDocuments { snapshot, error in

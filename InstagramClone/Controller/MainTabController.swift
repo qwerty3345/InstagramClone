@@ -134,8 +134,16 @@ final class MainTabController: UITabBarController {
     
     // YPImagePicker 이미지 선택 완료 시 동작 설정
     func didFinishPickingMedia(_ picker: YPImagePicker) {
-        picker.didFinishPicking { items, _ in
+        picker.didFinishPicking { items, cancelled in
             picker.dismiss(animated: false) {
+                
+                // Picker 에서 취소하고 돌아왔을 때, 메인 피드로 연결
+                if cancelled {
+                    self.selectedIndex = 0
+                    print("cancelled")
+                    return
+                }
+                
                 guard let selectedImage = items.singlePhoto?.image else { return }
                 
                 let vc = UploadPostController()
@@ -146,8 +154,6 @@ final class MainTabController: UITabBarController {
                 let nav = UINavigationController(rootViewController: vc)
                 nav.modalPresentationStyle = .fullScreen
                 self.present(nav, animated: false)
-                
-                print("#### didFinishPicking \(selectedImage)")
             }
         }
     }

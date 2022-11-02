@@ -21,6 +21,17 @@ class InputTextView: UITextView {
         return label
     }()
     
+    var placeHolderShouldCenter = true {
+        didSet {
+            if placeHolderShouldCenter {
+                placeholderLabel.anchor(left: leftAnchor, right: rightAnchor, paddingLeft: 8)
+                placeholderLabel.centerY(inView: self)
+            } else {
+                placeholderLabel.anchor(top: topAnchor, left: leftAnchor, paddingTop: 6, paddingLeft: 8)
+            }
+        }
+    }
+    
     
     // MARK: - Lifecycle
     
@@ -28,7 +39,6 @@ class InputTextView: UITextView {
         super.init(frame: frame, textContainer: textContainer)
         
         addSubview(placeholderLabel)
-        placeholderLabel.anchor(top: topAnchor, left: leftAnchor, paddingTop: 6, paddingLeft: 8)
         
         // 텍스트 값 변경에 대한 NotificationCenter observer 등록
         NotificationCenter.default.addObserver(self, selector: #selector(handleTextDidChange),
@@ -38,6 +48,8 @@ class InputTextView: UITextView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    
     
     
     // MARK: - Actions

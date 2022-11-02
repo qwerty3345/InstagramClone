@@ -8,7 +8,7 @@
 import UIKit
 
 protocol FeedCellDelegate: AnyObject {
-    func didTapUserName(userToShow user: User)
+    func cell(_ cell: FeedCell, wantsToShowCommentsFor post: Post)
 }
 
 /// 화면 메인 피드 FeedController의 CollectionView에 들어 갈 Cell의 UI Class
@@ -57,7 +57,7 @@ final class FeedCell: UICollectionViewCell {
         let button = UIButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "like_unselected"), for: .normal)
         button.tintColor = .black
-        button.addTarget(self, action: #selector(didTapUserName), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapComments), for: .touchUpInside)
         return button
     }()
     
@@ -149,9 +149,14 @@ final class FeedCell: UICollectionViewCell {
         guard let viewModel = viewModel else { return }
         
         UserService.fetchUser(uid: viewModel.ownerUid) { user in
-            self.delegate?.didTapUserName(userToShow: user)
+            self.delegate?.cell(self, wantsToShowCommentsFor: viewModel.post)
         }
+    }
+    
+    @objc func didTapComments() {
+        guard let viewModel = viewModel else { return }
         
+        delegate?.cell(self, wantsToShowCommentsFor: viewModel.post)
     }
     
     // MARK: - Helpers

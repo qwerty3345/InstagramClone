@@ -37,6 +37,7 @@ class UploadPostController: UIViewController {
         tv.font = .systemFont(ofSize: 16)
         // ⭐️ lazy var 로 해줘야 해당 스코프 안에서 delegate 선언할 수 있음! (VC 가 먼저 생겨야 하므로..)
         tv.delegate = self
+        tv.placeHolderShouldCenter = false
         return tv
     }()
     

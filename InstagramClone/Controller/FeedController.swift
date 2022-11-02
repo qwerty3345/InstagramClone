@@ -33,7 +33,7 @@ final class FeedController: UICollectionViewController {
     @objc func handleRefresh() {
         posts.removeAll()
         fetchPosts()
-        
+        // TODO: fetchPosts 로직 뜯어보기.
     }
     
     /// 로그아웃 버튼
@@ -97,6 +97,7 @@ final class FeedController: UICollectionViewController {
 extension FeedController {
     // "numberOfItemsInSection": CollectionView에 생성 할 Cell의 수
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        print(post == nil ? posts.count : 1)
         return post == nil ? posts.count : 1
     }
     
@@ -110,9 +111,10 @@ extension FeedController {
         } else {
             // 여러 post들이 존재할 때 (피드)
             cell.delegate = self
-            
+            print("if문 밖:", indexPath.row)
             // indexOutOfRange 에러 때문에 추가함. TODO: 정확한 이유에 대해서 더 알아보기.
             if posts.count > indexPath.row {
+                print("if문:", indexPath.row)
                 cell.viewModel = PostViewModel(post: posts[indexPath.row])
             }
         }
@@ -134,9 +136,10 @@ extension FeedController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+// MARK: - FeedCellDelegate
 extension FeedController: FeedCellDelegate {
-    func didTapUserName(userToShow user: User) {
-        let vc = ProfileController(user: user)
+    func cell(_ cell: FeedCell, wantsToShowCommentsFor post: Post) {
+        let vc = CommentController(collectionViewLayout: UICollectionViewFlowLayout())
         navigationController?.pushViewController(vc, animated: true)
     }
 }
