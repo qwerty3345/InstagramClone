@@ -20,6 +20,7 @@ extension UIViewController {
         gradient.frame = view.frame
     }
     
+    /// 뷰컨트롤러에서 로딩창 띄우기 (JGProgressHUD 라이브러리)
     func showLoader(_ show: Bool) {
         view.endEditing(true)
         

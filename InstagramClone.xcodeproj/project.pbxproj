@@ -19,6 +19,8 @@
 		B43BAF8E290AA0EE0081A355 /* UserCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B43BAF8D290AA0EE0081A355 /* UserCellViewModel.swift */; };
 		B44ABAC9290E7F9300289787 /* CommentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44ABAC8290E7F9300289787 /* CommentController.swift */; };
 		B44ABACB290E80D600289787 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44ABACA290E80D600289787 /* CommentCell.swift */; };
+		B44B2CD32913F87F006101B1 /* CommentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44B2CD22913F87F006101B1 /* CommentService.swift */; };
+		B44B2CD52913FF5B006101B1 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44B2CD42913FF5B006101B1 /* Comment.swift */; };
 		B457903C2902DECB00C2C080 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B457903B2902DECB00C2C080 /* AppDelegate.swift */; };
 		B457903E2902DECB00C2C080 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B457903D2902DECB00C2C080 /* SceneDelegate.swift */; };
 		B45790402902DECB00C2C080 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B457903F2902DECB00C2C080 /* ViewController.swift */; };
@@ -61,6 +63,8 @@
 		B43BAF8D290AA0EE0081A355 /* UserCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCellViewModel.swift; sourceTree = "<group>"; };
 		B44ABAC8290E7F9300289787 /* CommentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentController.swift; sourceTree = "<group>"; };
 		B44ABACA290E80D600289787 /* CommentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = "<group>"; };
+		B44B2CD22913F87F006101B1 /* CommentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentService.swift; sourceTree = "<group>"; };
+		B44B2CD42913FF5B006101B1 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		B45790382902DECB00C2C080 /* InstagramClone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InstagramClone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B457903B2902DECB00C2C080 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B457903D2902DECB00C2C080 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -186,6 +190,7 @@
 				B43BAF832909693F0081A355 /* UserService.swift */,
 				B47A0161290583020003295C /* ImageUploader.swift */,
 				B460B9A9290C01CA0060B781 /* PostService.swift */,
+				B44B2CD22913F87F006101B1 /* CommentService.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -235,6 +240,7 @@
 			children = (
 				B43BAF8729096BF30081A355 /* User.swift */,
 				B460B9AB290C15350060B781 /* Post.swift */,
+				B44B2CD42913FF5B006101B1 /* Comment.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -374,8 +380,10 @@
 				B45790642905356F00C2C080 /* FeedCell.swift in Sources */,
 				B457905E2902E1C400C2C080 /* ImageSelectorController.swift in Sources */,
 				B45790602902E1CD00C2C080 /* NotificationController.swift in Sources */,
+				B44B2CD52913FF5B006101B1 /* Comment.swift in Sources */,
 				B457905C2902E1BB00C2C080 /* SearchController.swift in Sources */,
 				B43BAF8C290A958F0081A355 /* UserCell.swift in Sources */,
+				B44B2CD32913F87F006101B1 /* CommentService.swift in Sources */,
 				B457903C2902DECB00C2C080 /* AppDelegate.swift in Sources */,
 				B45790622902E1D300C2C080 /* ProfileController.swift in Sources */,
 				B43BAF8829096BF30081A355 /* User.swift in Sources */,

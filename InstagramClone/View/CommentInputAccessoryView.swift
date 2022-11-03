@@ -7,9 +7,15 @@
 
 import UIKit
 
+protocol CommentInputAccessorViewDelegate: AnyObject {
+    func inputView(_ inputView: CommentInputAccessoryView, wantsToUploadComment comment: String)
+}
+
 class CommentInputAccessoryView: UIView {
     
     // MARK: - Properties
+    
+    weak var delegate: CommentInputAccessorViewDelegate?
     
     private let commentTextView: InputTextView = {
         let tv = InputTextView()
@@ -39,6 +45,7 @@ class CommentInputAccessoryView: UIView {
         
         // 장치에 따라 유연하게 높이 지원 TODO: 자세히 공부하기.
         autoresizingMask = .flexibleHeight
+        backgroundColor = .white
         
         addSubview(postButton)
         postButton.anchor(top: topAnchor, right: rightAnchor, paddingRight: 8)
@@ -66,7 +73,14 @@ class CommentInputAccessoryView: UIView {
     // MARK: - Actions
     
     @objc func handlePostTapped() {
-        
+        delegate?.inputView(self, wantsToUploadComment: commentTextView.text)
+    }
+    
+    // MARK: - Helpers
+    
+    func clearCommentTextView() {
+        commentTextView.text = nil
+        commentTextView.placeholderLabel.isHidden = false
     }
     
 }

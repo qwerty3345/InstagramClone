@@ -11,6 +11,15 @@ class CommentCell: UICollectionViewCell {
     
     // MARK: - Properties
     
+    var comment: Comment? {
+        didSet {
+            guard let comment = comment else { return }
+            profileImageView.sd_setImage(with: URL(string: comment.profileImageUrl))
+            commentLabel.text = comment.commentText
+            
+        }
+    }
+    
     private let profileImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill

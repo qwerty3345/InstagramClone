@@ -28,12 +28,11 @@ import UIKit
 import FirebaseAuth
 import YPImagePicker
 
-
+/// 앱이 실행되고 가장 먼저 호출 되는
 final class MainTabController: UITabBarController {
     
-    // MARK: - Lifecycle
-    
-    private var user: User? {
+    // MARK: - Properties
+    var user: User? {
         didSet {
             guard let user = user else { return }
             // 하단 TabBar를 구성하는 ViewControllers들을 지정함. (user 객체를 넘기면서)
@@ -42,6 +41,7 @@ final class MainTabController: UITabBarController {
     }
     
     
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,7 +52,7 @@ final class MainTabController: UITabBarController {
     }
     
     // MARK: - API
-    
+    /// 정보 가져오기
     func fetchUser() {
         // 유저 정보를 받아오고,
         UserService.fetchUser { user in

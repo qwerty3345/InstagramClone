@@ -51,7 +51,6 @@ struct PostService {
             print("### fetch posts: \(posts.count)")
             completion(posts)
         }
-        
     }
 }
 
