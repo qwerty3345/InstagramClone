@@ -11,14 +11,14 @@ class CommentCell: UICollectionViewCell {
     
     // MARK: - Properties
     
-    var comment: Comment? {
+    var viewModel: CommentViewModel? {
         didSet {
-            guard let comment = comment else { return }
-            profileImageView.sd_setImage(with: URL(string: comment.profileImageUrl))
-            commentLabel.text = comment.commentText
-            
+            guard let viewModel = viewModel else { return }
+            profileImageView.sd_setImage(with: viewModel.profileImageUrl)
+            commentLabel.attributedText = viewModel.commentLabelText()
         }
     }
+    
     
     private let profileImageView: UIImageView = {
         let iv = UIImageView()
@@ -48,8 +48,12 @@ class CommentCell: UICollectionViewCell {
         profileImageView.setDimensions(height: 40, width: 40)
         profileImageView.layer.cornerRadius = 40 / 2
         
+        commentLabel.numberOfLines = 0  // 여러 줄에 걸쳐 텍스트 표시
+        
         addSubview(commentLabel)
         commentLabel.centerY(inView: profileImageView, leftAnchor: profileImageView.rightAnchor, paddingLeft: 8)
+        
+        commentLabel.anchor(right: rightAnchor, paddingRight: 8)
     }
     
     required init?(coder: NSCoder) {
