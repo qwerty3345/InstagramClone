@@ -14,7 +14,9 @@ final class FeedController: UICollectionViewController {
     
     // MARK: - Lifecycle
     
-    var posts = [Post]()
+    var posts = [Post]() {
+        didSet { collectionView.reloadData() }
+    }
     
     // 프로필에서 게시물 클릭해서 들어갔을 때, 하나의 포스트만 보여주기 위한 필드
     var post: Post?
@@ -62,9 +64,17 @@ final class FeedController: UICollectionViewController {
             self.posts = posts
             self.collectionView.refreshControl?.endRefreshing()
             
-            self.collectionView.reloadData()
-            
-            
+            self.checkIfUserLikedPosts()
+        }
+    }
+    
+    func checkIfUserLikedPosts() {
+        self.posts.forEach { post in
+            PostService.checkIfUserLikedPost(post: post) { didLike in
+                if let index = self.posts.firstIndex(where: { $0.postId == post.postId }) {
+                    self.posts[index].didLike = didLike
+                }
+            }
         }
     }
     
@@ -111,10 +121,10 @@ extension FeedController {
         } else {
             // 여러 post들이 존재할 때 (피드)
             cell.delegate = self
-            print("if문 밖:", indexPath.row)
+//            print("if문 밖:", indexPath.row)
             // indexOutOfRange 에러 때문에 추가함. TODO: 정확한 이유에 대해서 더 알아보기.
             if posts.count > indexPath.row {
-                print("if문:", indexPath.row)
+//                print("if문:", indexPath.row)
                 cell.viewModel = PostViewModel(post: posts[indexPath.row])
             }
         }
@@ -138,8 +148,39 @@ extension FeedController: UICollectionViewDelegateFlowLayout {
 
 // MARK: - FeedCellDelegate
 extension FeedController: FeedCellDelegate {
+    
+    // 댓글 보기
     func cell(_ cell: FeedCell, wantsToShowCommentsFor post: Post) {
         let vc = CommentController(post: post)
         navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    // 게시물 좋아요, 좋아요 취소
+    func cell(_ cell: FeedCell, didLike post: Post) {
+        
+        if post.didLike {
+            // 좋아요 취소
+            PostService.unLikePost(forPost: post) { error in
+                cell.likeButton.setImage(UIImage(named: "like_unselected"), for: .normal)
+                cell.likeButton.tintColor = .black
+                cell.viewModel?.post.likes -= 1
+                print("좋아요 취소")
+            }
+        } else {
+            // 좋아요
+            PostService.likePost(forPost: post) { error in
+                // 좋아요 버튼
+                cell.likeButton.setImage(UIImage(named: "like_selected"), for: .normal)
+                cell.likeButton.tintColor = .red
+                cell.viewModel?.post.likes += 1
+                print("좋아요 완료")
+            }
+            
+        }
+        
+        // ⭐️⭐️⭐️ 파라미터로 받아온 post를 수정 해 봤자 의미가 없음.
+        // 어차피 실제로 post 객체를 가지고 있고, 수정하는 역할은 viewModel에서 하기 때문에 cell 내부의 뷰모델의 post에 접근해서 역할을 수행함.
+        
+        cell.viewModel?.post.didLike.toggle() 
     }
 }

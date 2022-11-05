@@ -25,6 +25,7 @@ class CommentCell: UICollectionViewCell {
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         iv.backgroundColor = .lightGray
+        
         return iv
     }()
     

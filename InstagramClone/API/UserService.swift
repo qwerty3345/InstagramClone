@@ -28,7 +28,7 @@ struct UserService {
     }
     
     // Firebase에서 uid를 바탕으로 유저 불러오기
-    static func fetchUser(uid: String, completion: @escaping (User) -> Void) {
+    static func fetchUser(withUid uid: String, completion: @escaping (User) -> Void) {
         COLLECTION_USERS.document(uid).getDocument { snapshot, error in
             guard let dict = snapshot?.data() else { return }
             

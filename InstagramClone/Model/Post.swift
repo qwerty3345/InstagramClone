@@ -11,12 +11,13 @@ import FirebaseFirestore
 struct Post {
     let caption: String
     let timestamp: Timestamp
-    let likes: Int
+    var likes: Int
     let imageUrl: String
     let postId: String
     let ownerUid: String
     let ownerUsername: String
     let ownerImageUrl: String
+    var didLike = false
     
     /// 딕셔너리 형태의 데이터를 통해 User 객체를 생성하는 생성자 정의
     init(postId: String, dictionary: [String: Any]) {

@@ -9,6 +9,7 @@ import UIKit
 
 protocol FeedCellDelegate: AnyObject {
     func cell(_ cell: FeedCell, wantsToShowCommentsFor post: Post)
+    func cell(_ cell: FeedCell, didLike post: Post)
 }
 
 /// 화면 메인 피드 FeedController의 CollectionView에 들어 갈 Cell의 UI Class
@@ -17,9 +18,7 @@ final class FeedCell: UICollectionViewCell {
     // MARK: - Properties
     
     var viewModel: PostViewModel? {
-        didSet {
-            configure()
-        }
+        didSet { configure() }
     }
     
     weak var delegate: FeedCellDelegate?
@@ -53,11 +52,11 @@ final class FeedCell: UICollectionViewCell {
         return iv
     }()
     
-    private lazy var likeButton: UIButton = {
+    lazy var likeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "like_unselected"), for: .normal)
         button.tintColor = .black
-        button.addTarget(self, action: #selector(didTapComments), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapLike), for: .touchUpInside)
         return button
     }()
     
@@ -65,7 +64,7 @@ final class FeedCell: UICollectionViewCell {
         let button = UIButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "comment"), for: .normal)
         button.tintColor = .black
-        button.addTarget(self, action: #selector(didTapUserName), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapComments), for: .touchUpInside)
         return button
     }()
     
@@ -148,7 +147,7 @@ final class FeedCell: UICollectionViewCell {
         print("유저이름 버튼 클릭")
         guard let viewModel = viewModel else { return }
         
-        UserService.fetchUser(uid: viewModel.ownerUid) { user in
+        UserService.fetchUser(withUid: viewModel.ownerUid) { user in
             self.delegate?.cell(self, wantsToShowCommentsFor: viewModel.post)
         }
     }
@@ -157,6 +156,12 @@ final class FeedCell: UICollectionViewCell {
         guard let viewModel = viewModel else { return }
         
         delegate?.cell(self, wantsToShowCommentsFor: viewModel.post)
+    }
+    
+    @objc func didTapLike() {
+        guard let viewModel = viewModel else { return }
+        
+        delegate?.cell(self, didLike: viewModel.post)
     }
     
     // MARK: - Helpers
@@ -171,6 +176,10 @@ final class FeedCell: UICollectionViewCell {
         
         postImageView.sd_setImage(with: viewModel.postImageUrl)
         profileImageView.sd_setImage(with: viewModel.profileImageUrl)
+        
+        likeButton.setImage(viewModel.likeButtonImage, for: .normal)
+        likeButton.tintColor = viewModel.likeButtonTintColor
+        
         
     }
     

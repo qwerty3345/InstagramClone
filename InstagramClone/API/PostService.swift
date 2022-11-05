@@ -52,5 +52,51 @@ struct PostService {
             completion(posts)
         }
     }
+    
+    /// 좋아요 FireStore DB 업로드  (post 컬렉션에 좋아요한 유저 정보 저장, user 컬렉션에 좋아요한 post 정보 저장)
+    static func likePost(forPost post: Post, completion: @escaping FireStoreCompletion) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        // post의 좋아요 +1
+        COLLECTION_POSTS.document(post.postId).updateData(["likes": post.likes + 1])
+        
+        // post 컬렉션에 좋아요한 유저의 uid 정보 저장
+        COLLECTION_POSTS.document(post.postId).collection("post-likes").document(uid).setData([:]) { _ in
+            // user 컬렉션에 좋아요한 post 정보 저장
+            COLLECTION_USERS.document(uid).collection("user-likes").document(post.postId).setData([:], completion: completion)
+        }
+    }
+    
+    /// 좋아요 취소
+    static func unLikePost(forPost post: Post, completion: @escaping FireStoreCompletion) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        guard post.likes > 0 else { return }
+        
+        // post의 좋아요 -1
+        COLLECTION_POSTS.document(post.postId).updateData(["likes": post.likes - 1])
+        
+        // post 컬렉션에 좋아요한 유저의 uid 정보 삭제
+        COLLECTION_POSTS.document(post.postId).collection("post-likes").document(uid).delete { _ in
+            // user 컬렉션에 좋아요한 post 정보 삭제
+            COLLECTION_USERS.document(uid).collection("user-likes").document(post.postId).delete(completion: completion)
+        }
+    }
+    
+    // 게시물이 좋아요 상태인지 확인
+    static func checkIfUserLikedPost(post: Post, completion: @escaping(Bool) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        COLLECTION_USERS.document(uid).collection("user-likes").document(post.postId).getDocument { snapshot, error in
+            guard let didLike = snapshot?.exists else { return }
+            completion(didLike)
+        }
+        
+        // 이렇게 해도 동일 (user, post 컬렉션 두 곳에 다 구현했기 때문에)
+//        COLLECTION_POSTS.document(post.postId).collection("post-likes").document(uid).getDocument { snapshot, error in
+//            guard let didLike = snapshot?.exists else { return }
+//            completion(didLike)
+//        }
+        
+    }
 }
 

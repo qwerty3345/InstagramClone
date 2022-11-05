@@ -103,6 +103,21 @@ extension CommentController {
     }
 }
 
+
+// MARK: - UICollectionViewDelegate
+
+extension CommentController {
+    // 특정 댓글 행 선택 시,
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let uid = comments[indexPath.row].uid
+        
+        UserService.fetchUser(withUid: uid) { user in
+            let vc = ProfileController(user: user)
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+}
+
 // MARK: - UICollectionViewDelegateFlowLayout
 
 extension CommentController: UICollectionViewDelegateFlowLayout {
