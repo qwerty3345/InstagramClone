@@ -10,6 +10,7 @@ import UIKit
 protocol FeedCellDelegate: AnyObject {
     func cell(_ cell: FeedCell, wantsToShowCommentsFor post: Post)
     func cell(_ cell: FeedCell, didLike post: Post)
+    func cell(_ cell: FeedCell, wantToShowProfileFor uid: String)
 }
 
 /// 화면 메인 피드 FeedController의 CollectionView에 들어 갈 Cell의 UI Class
@@ -23,12 +24,18 @@ final class FeedCell: UICollectionViewCell {
     
     weak var delegate: FeedCellDelegate?
     
-    private let profileImageView: UIImageView = {
+    private lazy var profileImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         iv.isUserInteractionEnabled = true
         iv.backgroundColor = .lightGray
+        
+        // ⭐️ImageView 에 버튼처럼 터치 액션 지정. -> lazy var 로 지연 초기화 시켜줘야 가능함!!!
+        let tap = UITapGestureRecognizer(target: self, action: #selector(showUserProfile))
+        iv.isUserInteractionEnabled = true
+        iv.addGestureRecognizer(tap)
+        
         return iv
     }()
     
@@ -38,7 +45,7 @@ final class FeedCell: UICollectionViewCell {
         button.setTitleColor(.black, for: .normal)
         button.setTitle("name", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 13)
-        button.addTarget(self, action: #selector(didTapUserName), for: .touchUpInside)
+        button.addTarget(self, action: #selector(showUserProfile), for: .touchUpInside)
         return button
     }()
     
@@ -48,7 +55,6 @@ final class FeedCell: UICollectionViewCell {
         iv.clipsToBounds = true
         iv.isUserInteractionEnabled = true
         iv.backgroundColor = .lightGray
-        
         return iv
     }()
     
@@ -72,7 +78,7 @@ final class FeedCell: UICollectionViewCell {
         let button = UIButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "send2"), for: .normal)
         button.tintColor = .black
-        button.addTarget(self, action: #selector(didTapUserName), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapShare), for: .touchUpInside)
         return button
     }()
     
@@ -143,13 +149,11 @@ final class FeedCell: UICollectionViewCell {
     
     // MARK: - Actions
     
-    @objc func didTapUserName() {
+    @objc func showUserProfile() {
         print("유저이름 버튼 클릭")
         guard let viewModel = viewModel else { return }
         
-        UserService.fetchUser(withUid: viewModel.ownerUid) { user in
-            self.delegate?.cell(self, wantsToShowCommentsFor: viewModel.post)
-        }
+        self.delegate?.cell(self, wantToShowProfileFor: viewModel.ownerUid)
     }
     
     @objc func didTapComments() {
@@ -162,6 +166,12 @@ final class FeedCell: UICollectionViewCell {
         guard let viewModel = viewModel else { return }
         
         delegate?.cell(self, didLike: viewModel.post)
+    }
+    
+    @objc func didTapShare() {
+        guard let viewModel = viewModel else { return }
+        
+        // TODO: 공유 기능 구현
     }
     
     // MARK: - Helpers

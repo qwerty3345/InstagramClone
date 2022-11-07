@@ -133,21 +133,19 @@ extension CommentController: UICollectionViewDelegateFlowLayout {
 extension CommentController: CommentInputAccessorViewDelegate {
     func inputView(_ inputView: CommentInputAccessoryView, wantsToUploadComment comment: String) {
 
-        // MainTabBarController 의 user 객체 가져옴. (TabBar 컨트롤러에서 navigationController 로 호출 되었기에 사용 가능)
+        // ⭐️⭐️⭐️ MainTabBarController 의 user 객체 가져옴. (TabBar 컨트롤러에서 navigationController 로 호출 되었기에 사용 가능)
         guard let tabVC = self.tabBarController as? MainTabController else { return } // downCastring
-        guard let user = tabVC.user else { return }
+        guard let currentUser = tabVC.user else { return }
 
         showLoader(true) // 로딩창 띄우기
 
-        CommentService.uploadComment(comment: comment, postID: post.postId, user: user) { error in
-            if let error = error {
-                print(error.localizedDescription)
-                return
-            }
-
+        CommentService.uploadComment(comment: comment, postID: post.postId, user: currentUser) { error in
             self.showLoader(false) // 로딩창 없애기 (클로저 내부이므로 self 키워드 필요)
 
             inputView.clearCommentTextView()
+            
+            // 댓글 달았다고 알림 전송
+            NotificationService.uploadNotification(fromUser: currentUser, toUid: self.post.ownerUid, type: .comment, post: self.post)
         }
     }
 }
