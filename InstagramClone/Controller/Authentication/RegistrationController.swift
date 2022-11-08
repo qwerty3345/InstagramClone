@@ -74,6 +74,11 @@ final class RegistrationController: UIViewController {
         configureNotificationObservers()
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
+    
     // MARK: - Actions
     
     /// 회원가입 버튼 액션
@@ -84,6 +89,7 @@ final class RegistrationController: UIViewController {
               let username = userNameTextField.text,
               let profileImage = profileImage else { return }
         
+        showLoader(true)
         
         let credentials = AuthCredentials(email: email, password: password, fullname: fullname, username: username, profileImage: profileImage)
         
@@ -95,6 +101,8 @@ final class RegistrationController: UIViewController {
             
             print("##### 성공적으로 Firestore에 유저 정보 저장")
             self.delegate?.authenticationDidComplete()
+            
+            self.showLoader(false)
         }
     }
     
@@ -123,10 +131,13 @@ final class RegistrationController: UIViewController {
     }
     
     @objc func handleProfilePhotoSelect() {
+        showLoader(true)
         let picker = UIImagePickerController()
         picker.delegate = self
         picker.allowsEditing = true
-        present(picker, animated: true)
+        present(picker, animated: true) {
+            self.showLoader(false)
+        }
     }
     
     // MARK: - Helpers

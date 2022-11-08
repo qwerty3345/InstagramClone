@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseFirestore
 
 struct NotificationViewModel {
     var notification: Notification
@@ -45,9 +46,10 @@ struct NotificationViewModel {
         return notification.userIsFollowed ? .black : .white
     }
     
-    
+    /// 알림이 몇일전/몇시간전에 온 알람인지 계산.
     func getNotificationTime() {
         // TODO: 알림이 온지 시간이 얼마나 지났는지를 알려주는 로직 구현 (timestamp 에서 지금 Date 가 얼마나 차이나는지를 계산)
-        notification.timestamp
+        print(notification.timestamp.dateValue())
+        
     }
 }

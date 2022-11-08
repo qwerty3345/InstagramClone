@@ -64,13 +64,20 @@ final class FeedController: UICollectionViewController {
             self.checkIfUserLikedPosts()
             return
         }
-
-        PostService.fetchPosts { posts in
+        
+        PostService.fetchFeedPosts { posts in
             self.posts = posts
             self.collectionView.refreshControl?.endRefreshing()
 
             self.checkIfUserLikedPosts()
         }
+
+//        PostService.fetchPosts { posts in
+//            self.posts = posts
+//            self.collectionView.refreshControl?.endRefreshing()
+//
+//            self.checkIfUserLikedPosts()
+//        }
     }
 
     func checkIfUserLikedPosts() {

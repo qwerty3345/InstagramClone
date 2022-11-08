@@ -38,8 +38,6 @@ final class ProfileController: UICollectionViewController {
         checkIfUserIsFollowed()
         fetchUserStats()
         fetchPosts()
-        
-        PostService.updateUserFeedAfterFollowing(user: user)
     }
 
     // MARK: - API
@@ -169,6 +167,9 @@ extension ProfileController: ProfileHeaderDelegate {
                 self.user.stats.followers -= 1
                 self.collectionView.reloadData()
             }
+            
+            // 유저 메인피드 정보 업데이트 _ 언팔로우
+            PostService.updateUserFeedAfterFollowing(user: user, didFollow: false)
 
         } else {
 
@@ -182,7 +183,8 @@ extension ProfileController: ProfileHeaderDelegate {
             
             // 팔로우 했다고 알림 전송
             NotificationService.uploadNotification(fromUser: currentUser, toUid: user.uid, type: .follow)
-            
+            // 유저 메인피드 정보 업데이트 _ 팔로우
+            PostService.updateUserFeedAfterFollowing(user: user, didFollow: true)
 
         }
 
