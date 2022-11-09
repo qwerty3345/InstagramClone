@@ -68,7 +68,6 @@ class CommentController: UICollectionViewController {
     func fetchComments() {
         CommentService.fetchComments(forPost: post.postId) { comments in
             self.comments = comments
-            print(comments.count)
             self.collectionView.reloadData()
         }
     }

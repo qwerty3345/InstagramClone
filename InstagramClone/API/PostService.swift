@@ -51,7 +51,6 @@ struct PostService {
             guard let documents = snapshot?.documents else { return }
 
             let posts = documents.map { Post(postId: $0.documentID, dictionary: $0.data()) }
-            print("### fetch posts: \(posts.count)")
             completion(posts)
         }
     }
@@ -90,7 +89,6 @@ struct PostService {
                     posts.append(post)
                     // 작업을 완료한 후, DispatchGroup의 task reference count를 -1 해줌.
                     fetchPostDispatchGroup.leave()
-                    print(posts.count)
                 }
             }
 
@@ -100,7 +98,6 @@ struct PostService {
                 posts.sort { first, second in
                     return first.timestamp.dateValue() > second.timestamp.dateValue()
                 }
-                print(posts)
                 completion(posts)
             }
         }
@@ -161,8 +158,7 @@ struct PostService {
             guard let documents = snapshot?.documents else { return }
 
             let docIDs = documents.map { $0.documentID }
-            print("document IDs: \(docIDs)")
-
+            
             docIDs.forEach { id in
                 if didFollow {
                     // 팔로우 시, user-feed DB에 게시물 id 추가
@@ -178,16 +174,14 @@ struct PostService {
     /// 유저가 게시글을 포스팅 한 이후 게시물 정보를 팔로워들의 피드에 뜨도록 DB 업데이트
     static func updateUserFeedAfterPost(postId: String) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
-
+        
         // 현재 접속한 사용자(게시물을 올리는 사람)의 팔로워 목록을 가져옴 _ 이 사람들의 유저 피드에 게시물id 를 추가 해 줄 것.
-        COLLECTION_FOLLOWERS.document(uid).collection("user-followers").getDocuments { snapshot, _ in
+        COLLECTION_FOLLOWERS.document(uid).collection("user-follower").getDocuments { snapshot, _ in
             guard let documents = snapshot?.documents else { return }
-
-            let followers = documents.map { User(dictionary: $0.data()) }
-
+            
             // 각각의 팔로워들의 user-feed DB에 게시물id 추가.
-            followers.forEach { follower in
-                COLLECTION_USERS.document(follower.uid).collection("user-feed").document(postId).setData([:])
+            documents.forEach { document in
+                COLLECTION_USERS.document(document.documentID).collection("user-feed").document(postId).setData([:])
             }
 
             // 내 피드 정보에도 추가

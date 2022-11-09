@@ -64,8 +64,6 @@ class UploadPostController: UIViewController {
     }
     
     @objc func didTapDone() {
-        print("#### 업로드 공유 버튼 누름")
-        
         guard let image = selectedImage else { return }
         guard let caption = captionTextView.text else { return }
         guard let user = currentUser else { return }

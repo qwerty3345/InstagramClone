@@ -150,7 +150,6 @@ final class FeedCell: UICollectionViewCell {
     // MARK: - Actions
     
     @objc func showUserProfile() {
-        print("유저이름 버튼 클릭")
         guard let viewModel = viewModel else { return }
         
         self.delegate?.cell(self, wantToShowProfileFor: viewModel.ownerUid)

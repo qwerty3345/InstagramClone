@@ -34,7 +34,6 @@ struct CommentService {
         
         // ⭐️⭐️ Firestore에서 해당 query의 데이터가 변경 될 때 마다 호출되는 snapshotListener 추가
         query.addSnapshotListener { snapshot, error in
-            print(snapshot?.documents.count)
             snapshot?.documentChanges.forEach({ change in
                 if change.type == .added {
                     let data = change.document.data()
@@ -42,8 +41,6 @@ struct CommentService {
                     comments.append(comment)
                 }
             })
-            
-            print(comments.count)
             
             completion(comments)
         }

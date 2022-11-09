@@ -96,6 +96,12 @@ final class RegistrationController: UIViewController {
         AuthService.registerUser(withCredential: credentials) { error in
             if let error = error {
                 print("##### registerUser error: \(error.localizedDescription)")
+                self.showSimpleAlert(
+                    withTitle: "회원가입 실패",
+                    message: "양식을 다시 확인 해 주세요.",
+                    buttonTitle: "확인")
+
+                self.showLoader(false)
                 return
             }
             

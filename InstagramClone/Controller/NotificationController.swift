@@ -110,7 +110,6 @@ extension NotificationController: NotificationCellDelegate {
     // 팔로우
     func cell(_ cell: NotificationCell, wantsToFollow uid: String) {
         showLoader(true)
-        print("NotificationCellDelegate wantsToFollow")
         UserService.follow(uid: uid) { _ in
             cell.viewModel?.notification.userIsFollowed = true
             self.showLoader(false)
@@ -120,7 +119,6 @@ extension NotificationController: NotificationCellDelegate {
     // 언팔로우
     func cell(_ cell: NotificationCell, wantsToUnfollow uid: String) {
         showLoader(true)
-        print("NotificationCellDelegate wantsToUnfollow")
         UserService.unfollow(uid: uid) { _ in
             cell.viewModel?.notification.userIsFollowed = false
             self.showLoader(false)

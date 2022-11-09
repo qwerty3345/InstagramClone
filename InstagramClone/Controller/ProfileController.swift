@@ -113,7 +113,6 @@ extension ProfileController {
 
 extension ProfileController {
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("#### selected Post: \(posts[indexPath.row].caption)")
         // ⭐️⭐️⭐️ FlowLayout 으로 해야만 작동함!!!
         let vc = FeedController(collectionViewLayout: UICollectionViewFlowLayout())
         vc.post = posts[indexPath.row]
@@ -160,7 +159,6 @@ extension ProfileController: ProfileHeaderDelegate {
 
         } else if user.isFollwed {
 
-            print("#### 언팔로우 처리")
             UserService.unfollow(uid: user.uid) { error in
                 self.user.isFollwed = false
                 // ⭐️ 이렇게 UserStat에 대한 API 호출을 또 해서 보여주는 것 보다, 당장 1만큼만 변경해서 보여주는 것이 좋은 로직인 듯.
@@ -172,8 +170,6 @@ extension ProfileController: ProfileHeaderDelegate {
             PostService.updateUserFeedAfterFollowing(user: user, didFollow: false)
 
         } else {
-
-            print("#### 팔로우 처리")
             UserService.follow(uid: user.uid) { error in
                 self.user.isFollwed = true
                 // ⭐️ 이렇게 UserStat에 대한 API 호출을 또 해서 보여주는 것 보다, 당장 1만큼만 변경해서 보여주는 것이 좋은 로직.

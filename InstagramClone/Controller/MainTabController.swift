@@ -140,7 +140,6 @@ final class MainTabController: UITabBarController {
                 // Picker 에서 취소하고 돌아왔을 때, 메인 피드로 연결
                 if cancelled {
                     self.selectedIndex = 0
-                    print("cancelled")
                     return
                 }
 
@@ -165,7 +164,6 @@ final class MainTabController: UITabBarController {
 extension MainTabController: AuthenticationDelegate {
     // 유저 인증 (로그인 or 회원가입)이 완료되면,
     func authenticationDidComplete() {
-        print("#### 유저 인증 완료.")
         // 유저 정보를 받아오고
         fetchUser()
         // 로그인 / 회원가입 화면을 종료함.

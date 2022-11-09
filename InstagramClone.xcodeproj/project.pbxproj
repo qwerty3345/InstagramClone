@@ -245,11 +245,11 @@
 			children = (
 				B42A1C3A2906C24600ED5249 /* Profile */,
 				B45790632905356F00C2C080 /* FeedCell.swift */,
-				B457906C2905631400C2C080 /* CustomTextField.swift */,
 				B43BAF8B290A958F0081A355 /* UserCell.swift */,
 				B44ABACA290E80D600289787 /* CommentCell.swift */,
-				B4716F28290FFFC00071D347 /* CommentInputAccessoryView.swift */,
 				B41BA45B29168D4200BD7537 /* NotificationCell.swift */,
+				B4716F28290FFFC00071D347 /* CommentInputAccessoryView.swift */,
+				B457906C2905631400C2C080 /* CustomTextField.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";

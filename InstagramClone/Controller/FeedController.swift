@@ -186,7 +186,6 @@ extension FeedController: FeedCellDelegate {
                 cell.likeButton.setImage(UIImage(named: "like_unselected"), for: .normal)
                 cell.likeButton.tintColor = .black
                 cell.viewModel?.post.likes -= 1
-                print("좋아요 취소")
             }
         } else {
             // 좋아요
@@ -195,7 +194,6 @@ extension FeedController: FeedCellDelegate {
                 cell.likeButton.setImage(UIImage(named: "like_selected"), for: .normal)
                 cell.likeButton.tintColor = .red
                 cell.viewModel?.post.likes += 1
-                print("좋아요 완료")
 
                 // 좋아요 했다고 알림 전송
                 NotificationService.uploadNotification(fromUser: user, toUid: post.ownerUid, type: .like, post: post)

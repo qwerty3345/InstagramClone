@@ -32,7 +32,14 @@ extension UIViewController {
             UIViewController.hud.dismiss()
         }
     }
-
+    
+    /// 간단한 Alert 창 띄워주는 함수
+    func showSimpleAlert(withTitle title: String, message: String, buttonTitle: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let action = UIAlertAction(title: buttonTitle, style: .default)
+        alert.addAction(action)
+        self.present(alert, animated: true)
+    }
 }
 
 extension UIButton {

@@ -24,7 +24,7 @@ struct AuthService {
     static func loginUser(withEmail email: String, password: String, completion: @escaping (Error?) -> Void) {
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             if let error = error {
-                print("#### Firebase 로그인 에러: \(error.localizedDescription)")
+                completion(error)
                 return
             }
             completion(nil)
@@ -39,7 +39,7 @@ struct AuthService {
             // user 생성
             Auth.auth().createUser(withEmail: credentials.email, password: credentials.password) { result, error in
                 if let error = error {
-                    print("##### Firebase Auth 에러: \(error.localizedDescription)")
+                    completion(error)
                     return
                 }
                 
