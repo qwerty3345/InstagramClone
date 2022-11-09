@@ -24,7 +24,7 @@ struct PostService {
             // 그냥 실행해도 되지만, return 값의 DocumentReference 값을 이용해 postId 값을 쓰기 위해 docRef 에 넣어줬음.
             let docRef = COLLECTION_POSTS.addDocument(data: data, completion: completion)
 //            COLLECTION_POSTS.addDocument(data: data, completion: completion)
-            
+
             // 피드 정보 업데이트
             self.updateUserFeedAfterPost(postId: docRef.documentID)
         }
@@ -65,6 +65,13 @@ struct PostService {
         }
     }
 
+
+    // TODO: 동작 로직에 대해, completion이 forEach 내부에서 매번 실행되는데, 어떻게 하면 모든 fetchPost 를 마치고 한 번만 실행할 수 있을까?
+    // DispatchQueue 내부에서 배열에 담으니 컴플리션이 먼저 동작하는 현상이 발생하는데, 어떻게 해결할 수 있을까?
+    // ⭐️ 여러개의 비동기 작업을 요청하고, 모든 작업이 완료되면 컴플리션 핸들러를 실행 : "DispatchGroup 활용"
+    // 그런데, DispatchGroup에 비동기 작업을 보냈기 때문에 채 실행이 다 되기 전에 completion이 실행됨. 즉, fetchPost 작업 요청이 다 끝난 후에 notify 가 되어 completion이 실행되긴 하지만 실제 posts 객체에 담기기 전에 실행되는 문제 발생
+    // ⭐️⭐️ 비동기 함수 여러개를 DispatchGroup으로 보내고 완료 시점을 알고 싶을 때: DispatchGroup의 enter, leave 활용!
+
     /// 로그인 한 유저의 메인 피드 게시물 정보를 가져옴.
     static func fetchFeedPosts(completion: @escaping ([Post]) -> Void) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
@@ -72,17 +79,29 @@ struct PostService {
         var posts = [Post]()
 
         COLLECTION_USERS.document(uid).collection("user-feed").getDocuments { snapshot, _ in
-            snapshot?.documents.forEach {
-                fetchPost(withPostId: $0.documentID) { post in
-                    // TODO: 동작 로직에 대해, completion이 forEach 내부에서 매번 실행되는데, 어떻게 하면 모든 fetchPost 를 마치고 한 번만 실행할 수 있을까?
-                    // TODO: DispatchQueue 내부에서 배열에 담으니 컴플리션이 먼저 동작하는 현상이 발생하는데, 어떻게 해결할 수 있을까?
-//                    DispatchQueue(label: "serial").async {
-                    posts.append(post)
+            // DispatchGroup 객체 생성
+            let fetchPostDispatchGroup = DispatchGroup()
 
-//                    }
-                    print("completion")
-                    completion(posts)
+            snapshot?.documents.forEach { document in
+                // 작업을 시작할 때, DispatchGroup의 task reference count를 +1 해줌.
+                fetchPostDispatchGroup.enter()
+
+                fetchPost(withPostId: document.documentID) { post in
+                    posts.append(post)
+                    // 작업을 완료한 후, DispatchGroup의 task reference count를 -1 해줌.
+                    fetchPostDispatchGroup.leave()
+                    print(posts.count)
                 }
+            }
+
+            // DispatchGroup의 task reference가 0이 된 시점에 실행함.
+            fetchPostDispatchGroup.notify(queue: .main) {
+                // post의 시간 순으로 posts 배열을 정렬 -> TODO: 고민. 이걸 프론트에서 정렬해서 뿌리는게 과연 좋은 로직일까? 아니면, 파이어베이스에 user-feed에 postId를 저장할 때, post의 timestamp 또한 함께 저장해서 sort를 한 채로 받아오는게 맞을까?
+                posts.sort { first, second in
+                    return first.timestamp.dateValue() > second.timestamp.dateValue()
+                }
+                print(posts)
+                completion(posts)
             }
         }
     }
@@ -170,7 +189,7 @@ struct PostService {
             followers.forEach { follower in
                 COLLECTION_USERS.document(follower.uid).collection("user-feed").document(postId).setData([:])
             }
-            
+
             // 내 피드 정보에도 추가
             COLLECTION_USERS.document(uid).collection("user-feed").document(postId).setData([:])
         }

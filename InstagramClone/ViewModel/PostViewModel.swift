@@ -39,6 +39,8 @@ struct PostViewModel {
     var profileImageUrl: URL? { return URL(string: post.ownerImageUrl) }
     
     var ownerUid: String { return post.ownerUid }
+    
+    var postTimeLabelText: String { return getTimePassedString(post.timestamp.dateValue(), and: Date()) + " 전" }
 
     init(post: Post) {
         self.post = post

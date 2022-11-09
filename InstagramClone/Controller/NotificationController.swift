@@ -49,14 +49,11 @@ final class NotificationController: UITableViewController {
 
     /// 알림에서 알려주는, '나를 팔로우한 유저'를 내가 팔로우 하고 있는지 여부를 확인해서 notification 객체에 할당
     func checkIfUserIsFollowed() {
-        print("checkIfUserIsFollowed")
         notifications.forEach { notification in
             guard notification.type == .follow else { return }
-            print("check!")
 
             UserService.checkIfUserIsFollowed(uid: notification.uid) { isFollowed in
                 if let index = self.notifications.firstIndex(where: { $0.id == notification.id }) {
-                    print(isFollowed)
                     self.notifications[index].userIsFollowed = isFollowed
                 }
             }

@@ -98,7 +98,7 @@ final class FeedCell: UICollectionViewCell {
     
     private let postTimeLabel: UILabel = {
         let label = UILabel()
-        label.text = "2일 전"
+        label.text = ""
         label.font = UIFont.boldSystemFont(ofSize: 12)
         label.textColor = .lightGray
         return label
@@ -190,6 +190,7 @@ final class FeedCell: UICollectionViewCell {
         likeButton.setImage(viewModel.likeButtonImage, for: .normal)
         likeButton.tintColor = viewModel.likeButtonTintColor
         
+        postTimeLabel.text = viewModel.postTimeLabelText
         
     }
     

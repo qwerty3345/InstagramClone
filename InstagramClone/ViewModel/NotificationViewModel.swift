@@ -25,7 +25,11 @@ struct NotificationViewModel {
         
         let attributedText = NSMutableAttributedString(string: username, attributes: [.font: UIFont.boldSystemFont(ofSize: 14)])
         attributedText.append(NSMutableAttributedString(string: message, attributes: [.font: UIFont.systemFont(ofSize: 14)]))
-        attributedText.append(NSMutableAttributedString(string: " 2분전", attributes: [.font: UIFont.systemFont(ofSize: 12), .foregroundColor: UIColor.lightGray]))
+        
+        // 몇 일/시간/분 전에 온 알람인지 값 구하기
+        let timeString = getTimePassedString(notification.timestamp.dateValue(), and: Date())
+        
+        attributedText.append(NSMutableAttributedString(string: " \(timeString) 전", attributes: [.font: UIFont.systemFont(ofSize: 12), .foregroundColor: UIColor.lightGray]))
         
         return attributedText
         
@@ -44,12 +48,5 @@ struct NotificationViewModel {
     
     var followButtonTextColor: UIColor {
         return notification.userIsFollowed ? .black : .white
-    }
-    
-    /// 알림이 몇일전/몇시간전에 온 알람인지 계산.
-    func getNotificationTime() {
-        // TODO: 알림이 온지 시간이 얼마나 지났는지를 알려주는 로직 구현 (timestamp 에서 지금 Date 가 얼마나 차이나는지를 계산)
-        print(notification.timestamp.dateValue())
-        
     }
 }
