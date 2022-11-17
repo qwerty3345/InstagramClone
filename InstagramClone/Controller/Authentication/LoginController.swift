@@ -122,6 +122,8 @@ final class LoginController: UIViewController {
     /// 비밀번호 찾기 버튼 액션
     @objc func handleShowResetPassword() {
         let vc = ResetPasswordController()
+        vc.delegate = self
+        vc.email = emailTextField.text
         navigationController?.pushViewController(vc, animated: true)
     }
 
@@ -167,4 +169,14 @@ extension LoginController: FormViewModel {
         loginButton.setTitleColor(viewModel.buttonTitleColor, for: .normal)
         loginButton.isEnabled = viewModel.formIsValid
     }
+}
+
+// MARK: - ResetPasswordContollerDelegate
+extension LoginController: ResetPasswordContollerDelegate {
+    func controllerDidSendResetPasswordLink(_ controller: ResetPasswordController) {
+        navigationController?.popViewController(animated: true)
+        showSimpleAlert(withTitle: "성공", message: "회원님의 메일 주소로 비밀번호 재설정 메일을 보내드렸습니다.", buttonTitle: "확인")
+    }
+    
+    
 }

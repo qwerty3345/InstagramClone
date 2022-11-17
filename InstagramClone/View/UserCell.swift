@@ -7,7 +7,7 @@
 
 import UIKit
 
-class UserCell: UITableViewCell {
+final class UserCell: UITableViewCell {
     
     // MARK: - Properties
 

@@ -44,7 +44,9 @@ struct NotificationService {
         COLLECTION_NOTIFICATION.document(currentUid).collection("user-notifications").getDocuments { snapshot, error in
             guard let documents = snapshot?.documents else { return }
             
-            let notifications = documents.map { Notification(dictionary: $0.data()) }
+            let notifications = documents
+                .map { Notification(dictionary: $0.data()) }
+                .sorted { $0.timestamp.dateValue() > $1.timestamp.dateValue() }
             
             completion(notifications)
         }

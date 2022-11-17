@@ -40,20 +40,21 @@ struct PostViewModel {
     
     var ownerUid: String { return post.ownerUid }
     
-    var postTimeLabelText: String { return getTimePassedString(post.timestamp.dateValue(), and: Date()) + " 전" }
+    var timestampString: String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.second, .minute, .hour, .day, .weekOfMonth]
+        formatter.maximumUnitCount = 1
+        formatter.unitsStyle = .abbreviated
+        return formatter.string(from: post.timestamp.dateValue(), to: Date()) ?? ""
+    }
+    
+    var postTimeLabelText: String {
+        return timestampString + " 전"
+        
+    }
 
     init(post: Post) {
         self.post = post
     }
-
-
-    //    let caption: String
-    //    let timestamp: Timestamp
-    //    let likes: Int
-    //    let imageUrl: String
-    //    let ownerUid: String
-    //    let postId: String
-
-
 
 }

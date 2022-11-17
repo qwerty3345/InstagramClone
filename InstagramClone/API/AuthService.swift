@@ -10,6 +10,8 @@ import FirebaseAuth
 import FirebaseCore
 import FirebaseFirestore
 
+typealias SendPasswordResetCallback = (Error?) -> Void
+
 /// 사용자 인증 시 데이터를 담은 모델 역할을 하는 구조체
 struct AuthCredentials {
     let email: String
@@ -57,5 +59,9 @@ struct AuthService {
                 COLLECTION_USERS.document(uid).setData(data, completion: completion)
             }
         }
+    }
+    
+    static func resetPassword(withEmail email: String, completion: SendPasswordResetCallback?) {
+        Auth.auth().sendPasswordReset(withEmail: email, completion: completion)
     }
 }

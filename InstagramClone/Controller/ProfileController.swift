@@ -151,11 +151,14 @@ extension ProfileController: ProfileHeaderDelegate {
     func header(_ profileHeader: ProfileHeader, didTapActionButtonFor user: User) {
         guard let tabVC = self.tabBarController as? MainTabController else { return } // downCastring
         guard let currentUser = tabVC.user else { return }
+        
+        showLoader(true)
 
         if user.isCurrentUser {
 
             // TODO: 프로필 수정 페이지로 넘어가게.
             print("#### 현재 유저 상태이므로 프로필 수정")
+            showLoader(false)
 
         } else if user.isFollwed {
 
@@ -164,6 +167,7 @@ extension ProfileController: ProfileHeaderDelegate {
                 // ⭐️ 이렇게 UserStat에 대한 API 호출을 또 해서 보여주는 것 보다, 당장 1만큼만 변경해서 보여주는 것이 좋은 로직인 듯.
                 self.user.stats.followers -= 1
                 self.collectionView.reloadData()
+                self.showLoader(false)
             }
             
             // 유저 메인피드 정보 업데이트 _ 언팔로우
@@ -175,6 +179,7 @@ extension ProfileController: ProfileHeaderDelegate {
                 // ⭐️ 이렇게 UserStat에 대한 API 호출을 또 해서 보여주는 것 보다, 당장 1만큼만 변경해서 보여주는 것이 좋은 로직.
                 self.user.stats.followers += 1
                 self.collectionView.reloadData()
+                self.showLoader(false)
             }
             
             // 팔로우 했다고 알림 전송

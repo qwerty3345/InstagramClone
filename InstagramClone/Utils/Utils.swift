@@ -8,7 +8,7 @@
 import UIKit
 
 /// 두 Date 객체 사이의 시간을 계산 해 "일➡시➡분➡초" 순으로 큰 값 기준으로 리턴
-func getTimePassedString(_ from: Date, and to: Date) -> String {
+/**func getTimePassedString(_ from: Date, and to: Date) -> String {
     let dateComponents = Calendar.current.dateComponents([.day, .hour, .minute, .second], from: from, to: to)
     
     if dateComponents.day != 0 {
@@ -24,4 +24,5 @@ func getTimePassedString(_ from: Date, and to: Date) -> String {
     }
 
     return "\(dateComponents.second ?? 0)초"
-}
+}*/
+// 훨씬 간편한 방법이 있었음... DateComponentsFormatter() 사용.

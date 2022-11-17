@@ -125,7 +125,7 @@ final class FeedController: UICollectionViewController {
 extension FeedController {
     // "numberOfItemsInSection": CollectionView에 생성 할 Cell의 수
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print(post == nil ? posts.count : 1)
+//        print(post == nil ? posts.count : 1)
         return post == nil ? posts.count : 1
     }
 
