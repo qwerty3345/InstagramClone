@@ -15,7 +15,7 @@ struct User {
     let username: String
     let uid: String
     
-    var isFollwed: Bool = false
+    var isFollwed: Bool?
     
     var stats: UserStats!
     

@@ -20,17 +20,20 @@ struct ProfileHeaderViewModel {
     
     var followButtonText: String {
         if user.isCurrentUser { return "프로필 수정" }
-        return user.isFollwed ? "팔로잉" : "팔로우"
+        guard let isFollwed = user.isFollwed else { return "로딩중" }
+        return isFollwed ? "팔로잉" : "팔로우"
     }
     
     var followButtonBackgroundColor: UIColor {
         if user.isCurrentUser { return .white }
-        return user.isFollwed ? .white : .systemBlue
+        guard let isFollwed = user.isFollwed else { return .white }
+        return isFollwed ? .white : .systemBlue
     }
     
     var followButtonTextColor: UIColor {
         if user.isCurrentUser { return .black }
-        return user.isFollwed ? .black : .white
+        guard let isFollwed = user.isFollwed else { return .black }
+        return isFollwed ? .black : .white
     }
     
     var numberOfFollowing: NSAttributedString {

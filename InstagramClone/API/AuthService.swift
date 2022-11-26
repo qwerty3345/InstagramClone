@@ -61,6 +61,7 @@ struct AuthService {
         }
     }
     
+    /// 비밀번호 재설정 (사용자의 메일로 재설정 메일이 발송됨)
     static func resetPassword(withEmail email: String, completion: SendPasswordResetCallback?) {
         Auth.auth().sendPasswordReset(withEmail: email, completion: completion)
     }

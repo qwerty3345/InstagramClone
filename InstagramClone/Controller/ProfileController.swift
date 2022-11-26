@@ -155,13 +155,12 @@ extension ProfileController: ProfileHeaderDelegate {
         showLoader(true)
 
         if user.isCurrentUser {
-
             // TODO: 프로필 수정 페이지로 넘어가게.
             print("#### 현재 유저 상태이므로 프로필 수정")
             showLoader(false)
-
-        } else if user.isFollwed {
-
+        }
+        
+        if user.isFollwed == true {
             UserService.unfollow(uid: user.uid) { error in
                 self.user.isFollwed = false
                 // ⭐️ 이렇게 UserStat에 대한 API 호출을 또 해서 보여주는 것 보다, 당장 1만큼만 변경해서 보여주는 것이 좋은 로직인 듯.
@@ -169,7 +168,6 @@ extension ProfileController: ProfileHeaderDelegate {
                 self.collectionView.reloadData()
                 self.showLoader(false)
             }
-            
             // 유저 메인피드 정보 업데이트 _ 언팔로우
             PostService.updateUserFeedAfterFollowing(user: user, didFollow: false)
 
